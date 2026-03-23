@@ -10,6 +10,28 @@ interface MessageListProps {
   isLoading?: boolean;
 }
 
+function getToolLabel(toolName: string, args: Record<string, unknown>, state: string): string {
+  const done = state === "result";
+
+  if (toolName === "str_replace_editor") {
+    const cmd = args?.command as string;
+    const path = (args?.path as string)?.split("/").pop() ?? "file";
+    if (cmd === "create") return done ? `Created ${path}` : `Creating ${path}…`;
+    if (cmd === "str_replace" || cmd === "write") return done ? `Updated ${path}` : `Updating ${path}…`;
+    return done ? `Edited ${path}` : `Editing ${path}…`;
+  }
+
+  if (toolName === "file_manager") {
+    const cmd = args?.command as string;
+    const path = (args?.path as string)?.split("/").pop() ?? "file";
+    if (cmd === "rename") return done ? `Renamed ${path}` : `Renaming ${path}…`;
+    if (cmd === "delete") return done ? `Deleted ${path}` : `Deleting ${path}…`;
+    return done ? "File operation done" : "Managing file…";
+  }
+
+  return toolName;
+}
+
 export function MessageList({ messages, isLoading }: MessageListProps) {
   if (messages.length === 0) {
     return (
@@ -77,16 +99,16 @@ export function MessageList({ messages, isLoading }: MessageListProps) {
                           case "tool-invocation":
                             const tool = part.toolInvocation;
                             return (
-                              <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs font-mono border border-neutral-200">
+                              <div key={partIndex} className="inline-flex items-center gap-2 mt-2 px-3 py-1.5 bg-neutral-50 rounded-lg text-xs border border-neutral-200">
                                 {tool.state === "result" && tool.result ? (
                                   <>
                                     <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
-                                    <span className="text-neutral-700">{tool.toolName}</span>
+                                    <span className="text-neutral-700">{getToolLabel(tool.toolName, tool.args, tool.state)}</span>
                                   </>
                                 ) : (
                                   <>
                                     <Loader2 className="w-3 h-3 animate-spin text-blue-600" />
-                                    <span className="text-neutral-700">{tool.toolName}</span>
+                                    <span className="text-neutral-700">{getToolLabel(tool.toolName, tool.args, tool.state)}</span>
                                   </>
                                 )}
                               </div>

@@ -1,4 +1,4 @@
-# UIGen
+# Claude Code in Action | UIGen
 
 AI-powered React component generator with live preview.
 

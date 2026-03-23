@@ -50,3 +50,5 @@ next-env.d.ts
 /prisma/dev.db
 /prisma/dev.db-journal
 .playwright-mcp/
+pre-log.json
+post-log.json
